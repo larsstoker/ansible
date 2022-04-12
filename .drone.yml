@@ -10,6 +10,7 @@ steps:
         path: /tmp/ansible
     commands:
       - cp -R /drone/src/* /tmp/ansible/
+      
 volumes:
 - name: host-ansible
   host:
