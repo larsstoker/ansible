@@ -1,0 +1,13 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: pull
+    image: ubuntu
+    volumes:
+      - name: host-ansible
+        path: /tmp/ansible
+    commands:
+      - ls
+      - pwd
