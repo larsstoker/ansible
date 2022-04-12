@@ -9,5 +9,5 @@ steps:
       - name: host-ansible
         path: /tmp/ansible
     commands:
-      - ls
+      - ls -al
       - pwd
