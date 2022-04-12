@@ -9,5 +9,8 @@ steps:
       - name: host-ansible
         path: /tmp/ansible
     commands:
-      - ls -al
-      - pwd
+      - cp -R /drone/src/* /tmp/ansible/
+volumes:
+- name: host-ansible
+  host:
+    path: /etc/ansible
