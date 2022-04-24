@@ -1,0 +1,40 @@
+---
+- name: Add InfluxData repository (Rocky Linux)
+  yum_repository:
+    name: influxdb
+    description: InfluxDB Repository - RHEL $releasever
+    baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
+    gpgcheck: yes
+    gpgkey: https://repos.influxdata.com/influxdb.key
+  when: ansible_os_family == "Rocky"
+
+- name: Install Telegraf (Rocky Linux)
+  yum:
+    name: telegraf
+    state: latest
+  when: ansible_os_family == "Rocky"
+
+- name: Copy config (Rocky Linux)
+  copy:
+    src: telegraf-linux.conf
+    dest: /etc/telegraf.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+    force: yes
+  notify:
+    - restart telegraf
+  when: ansible_os_family == "Rocky"
+
+- name: Copy config (Windows)
+  copy:
+    src: telegraf-windows.conf
+    dest: /etc/telegraf.conf
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+    force: yes
+  notify:
+    - restart telegraf
