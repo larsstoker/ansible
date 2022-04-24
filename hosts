@@ -1,6 +1,6 @@
 all:
   children:
     dev:
-      children:
+      hosts:
         AnsibleTest01:
           ansible_host: 10.0.20.101
