@@ -38,3 +38,4 @@
     force: yes
   notify:
     - restart telegraf
+  when: ansible_os_family == "Windows"
