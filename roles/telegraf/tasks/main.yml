@@ -14,10 +14,22 @@
     state: latest
   when: ansible_os_family == "Rocky"
 
+- name: Enable Telegraf service (Rocky Linux)
+  service:
+    name: telegraf
+    enabled: yes
+  when: ansible_os_family == "Rocky"
+
+- name: Start Telegraf service (Rocky Linux)
+  service:
+    name: telegraf
+    state: started
+  when: ansible_os_family == "Rocky"
+
 - name: Copy config (Rocky Linux)
   copy:
     src: telegraf-linux.conf
-    dest: /etc/telegraf.conf
+    dest: /etc/telegraf/telegraf.conf
     owner: root
     group: root
     mode: 0644
