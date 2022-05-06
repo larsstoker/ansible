@@ -1,19 +1,21 @@
 ---
-- name: Install AD packages
+- name: Install AD packages (Rocky Linux)
   dnf:
     name: "{{ ad_packages }}"
     state: present
   tags:
     - ad-packages
+  when: ansible_os_family == "Rocky"
 
-- name: Install pexpect
+- name: Install pexpect (Rocky Linux)
   pip:
     name: pexpect
     executable: pip3
   tags:
     - ad-packages
+  when: ansible_os_family == "Rocky"
 
-- name: Setup DNS servers
+- name: Setup DNS servers (Rocky Linux)
   copy:
     src: resolv.conf
     dest: /etc/resolv.conf
@@ -22,16 +24,18 @@
     mode: 0644
   tags:
     - ad-join
+  when: ansible_os_family == "Rocky"
 
-- name: Join domain
+- name: Join domain (Rocky Linux)
   expect:
     command: /bin/bash -c "/usr/sbin/realm join "--user={{ ad_usr }}" "--computer-ou={{ ad_ou }}" "--os-name={{ ansible_distribution }}" "--os-version={{ ansible_distribution_version }}" "{{ ad_domain }}""
     responses:
       Password for *: "{{ ad_pwd }}"
   tags:
     - ad-join
+  when: ansible_os_family == "Rocky"
 
-- name: Allow login without domain FQDN
+- name: Allow login without domain FQDN (Rocky Linux)
   lineinfile:
     backup: yes
     state: present
@@ -44,8 +48,9 @@
   notify: restart sssd
   tags:
     - ad-join
+  when: ansible_os_family == "Rocky"
 
-- name: Restrict login to Linux Admins group
+- name: Restrict login to Linux Admins group (Rocky Linux)
   lineinfile:
     backup: yes
     state: present
@@ -55,15 +60,17 @@
   notify: restart sssd
   tags:
     - ad-join
+  when: ansible_os_family == "Rocky"
 
-- name: Create AD Sudoers file
+- name: Create AD Sudoers file (Rocky Linux)
   file:
     path: /etc/sudoers.d/AD
     state: touch
   tags:
     - ad-join
+  when: ansible_os_family == "Rocky"
 
-- name: Add Linux Admins to Sudoers
+- name: Add Linux Admins to Sudoers (Rocky Linux)
   lineinfile:
     backup: no
     state: present
@@ -72,3 +79,4 @@
     insertafter: EOF
   tags:
     - ad-join
+  when: ansible_os_family == "Rocky"
