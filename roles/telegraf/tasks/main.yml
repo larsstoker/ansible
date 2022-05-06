@@ -6,24 +6,33 @@
     baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
     gpgcheck: yes
     gpgkey: https://repos.influxdata.com/influxdb.key
+  tags:
+    - telegraf-install
   when: ansible_os_family == "Rocky"
+
 
 - name: Install Telegraf (Rocky Linux)
   yum:
     name: telegraf
     state: latest
+  tags:
+    - telegraf-install
   when: ansible_os_family == "Rocky"
 
 - name: Enable Telegraf service (Rocky Linux)
   service:
     name: telegraf
     enabled: yes
+  tags:
+    - telegraf-install
   when: ansible_os_family == "Rocky"
 
 - name: Start Telegraf service (Rocky Linux)
   service:
     name: telegraf
     state: started
+  tags:
+    - telegraf-install
   when: ansible_os_family == "Rocky"
 
 - name: Copy config (Rocky Linux)
@@ -37,6 +46,8 @@
     force: yes
   notify:
     - restart telegraf
+  tags:
+    - telegraf-configure
   when: ansible_os_family == "Rocky"
 
 - name: Copy config (Windows)
@@ -48,6 +59,8 @@
     mode: 0644
     backup: yes
     force: yes
+  tags:
+    - telegraf-configure
   notify:
     - restart telegraf
   when: ansible_os_family == "Windows"
