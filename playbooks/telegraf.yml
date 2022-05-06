@@ -5,5 +5,5 @@
   
   tasks:
     - name: Include telegraf role
-      include_role:
+      import_role:
         name: telegraf
