@@ -4,7 +4,7 @@
     name: "{{ ad_packages }}"
     state: present
   tags:
-    - ad-packages
+    - ad-install
   when: ansible_os_family == "Rocky"
 
 - name: Install pexpect (Rocky Linux)
@@ -12,7 +12,7 @@
     name: pexpect
     executable: pip3
   tags:
-    - ad-packages
+    - ad-install
   when: ansible_os_family == "Rocky"
 
 - name: Setup DNS servers (Rocky Linux)
