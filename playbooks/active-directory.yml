@@ -1,0 +1,10 @@
+---
+- hosts: all
+  remote_user: ansible
+  become: true
+
+  tasks:
+    - name: Import Active Directory role
+      import_role:
+        name: active-directory
+      
