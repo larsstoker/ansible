@@ -10,7 +10,6 @@
     - telegraf-install
   when: ansible_os_family == "Rocky"
 
-
 - name: Install Telegraf (Rocky Linux)
   yum:
     name: telegraf
