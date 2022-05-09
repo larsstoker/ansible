@@ -4,6 +4,6 @@
   become: true
 
   tasks:
-    - name: Import firewall-cmd role
+    - name: Import firewalld role
       import_role:
-        name: firewall-cmd
+        name: firewalld
