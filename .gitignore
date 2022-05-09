@@ -1,3 +1,4 @@
 # Exclude test files
 playbooks/tags-test.yml
 roles/tags-test/
+test-hosts
