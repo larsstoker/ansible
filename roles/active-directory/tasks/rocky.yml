@@ -1,19 +1,19 @@
 ---
-- name: Install AD packages (Rocky Linux)
+- name: Install AD packages
   dnf:
     name: "{{ ad_packages }}"
     state: present
   tags:
     - install
 
-- name: Install pexpect (Rocky Linux)
+- name: Install pexpect 
   pip:
     name: pexpect
     executable: pip3
   tags:
     - install
 
-- name: Setup DNS servers (Rocky Linux)
+- name: Setup DNS servers 
   copy:
     src: resolv.conf
     dest: /etc/resolv.conf
@@ -23,7 +23,7 @@
   tags:
     - configure
 
-- name: Join domain (Rocky Linux)
+- name: Join domain 
   expect:
     command: /bin/bash -c "/usr/sbin/realm join "--user={{ ad_usr }}" "--computer-ou={{ ad_ou }}" "--os-name={{ ansible_distribution }}" "--os-version={{ ansible_distribution_version }}" "{{ ad_domain }}""
     responses:
@@ -31,7 +31,7 @@
   tags:
     - configure
 
-- name: Allow login without domain FQDN (Rocky Linux)
+- name: Allow login without domain FQDN 
   lineinfile:
     backup: yes
     state: present
@@ -45,7 +45,7 @@
   tags:
     - configure
 
-- name: Restrict login to Linux Admins group (Rocky Linux)
+- name: Restrict login to Linux Admins group 
   lineinfile:
     backup: yes
     state: present
@@ -56,14 +56,14 @@
   tags:
     - configure
 
-- name: Create AD Sudoers file (Rocky Linux)
+- name: Create AD Sudoers file 
   file:
     path: /etc/sudoers.d/AD
     state: touch
   tags:
     - configure
 
-- name: Add Linux Admins to Sudoers (Rocky Linux)
+- name: Add Linux Admins to Sudoers 
   lineinfile:
     backup: no
     state: present
