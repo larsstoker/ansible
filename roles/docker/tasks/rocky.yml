@@ -1,0 +1,41 @@
+---
+- name: Add Docker repo
+  command:
+    cmd: sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+    warn: false
+  tags:
+    - install
+
+- name: Install Docker
+  dnf:
+    name: "{{ docker_packages }}"
+    state: present
+  tags:
+    - install
+
+- name: Enable Docker service
+  service:
+    name: docker
+    enabled: yes
+  tags:
+    - install
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+  tags:
+    - install
+
+- name: Disable tx-checksum-ip-generic
+  copy:
+    src: 10-tx-checksum-ip-generic
+    dest: /etc/NetworkManager/dispatcher.d/pre-up.d/10-tx-checksum-ip-generic
+    mode: '0755'
+  tags:
+    - swarm
+
+- name: Reboot to apply tx-checksum-ip-generic settings
+  reboot:
+  tags:
+    - swarm

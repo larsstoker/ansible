@@ -1,0 +1,1 @@
+ethtool -K ens160 tx-checksum-ip-generic off
