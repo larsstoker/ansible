@@ -1,0 +1,7 @@
+---
+- name: Install default packages
+  dnf:
+    name: "{{ default_packages }}"
+    state: present
+  tags:
+    - install
