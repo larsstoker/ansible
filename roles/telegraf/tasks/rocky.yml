@@ -7,28 +7,28 @@
     gpgcheck: yes
     gpgkey: https://repos.influxdata.com/influxdb.key
   tags:
-    - telegraf-install
+    - install
 
 - name: Install Telegraf
   yum:
     name: telegraf
     state: latest
   tags:
-    - telegraf-install
+    - install
 
 - name: Enable Telegraf service
   service:
     name: telegraf
     enabled: yes
   tags:
-    - telegraf-install
+    - install
 
 - name: Start Telegraf service
   service:
     name: telegraf
     state: started
   tags:
-    - telegraf-install
+    - install
 
 - name: Copy config
   copy:
@@ -42,4 +42,4 @@
   notify:
     - restart telegraf
   tags:
-    - telegraf-configure
+    - configure
