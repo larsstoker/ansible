@@ -1,0 +1,29 @@
+---
+- name: Update the system
+  dnf:
+    name: '*'
+    state: latest
+  tags: update
+
+- name: Check needs-restarting
+  shell: dnf needs-restarting -r ; echo $?
+  args:
+    warn: false
+  register: restart_required_command
+  tags: 
+    - allow-restart
+    - never
+
+- name: Check the output of needs-restarting
+  set_fact:
+    restart_required: "{{ restart_required_command.stdout_lines | last }}"
+  tags: 
+    - allow-restart
+    - never
+
+- name: Restart if rquired
+  reboot:
+  when: restart_required == "1"
+  tags: 
+    - allow-restart
+    - never
