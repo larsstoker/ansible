@@ -1,0 +1,14 @@
+---
+- name: Include clone-vm-dhcp task
+  include_tasks: "clone-vm-dhcp.yml"
+  tags:
+    - deploy-vm
+    - dhcp
+    - never
+
+- name: Include clone-vm-static task
+  include_tasks: "clone-vm-static.yml"
+  tags:
+    - deploy-vm
+    - static
+    - never

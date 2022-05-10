@@ -1,0 +1,3 @@
+vcenter_cluster: "vSAN Cluster"
+vcenter_datacenter: Home
+vcenter_folder: STAGING

@@ -1,0 +1,31 @@
+---
+- name: Clone VM from template (static)
+  vmware_guest:
+    template: "{{ vcenter_template }}"
+    datacenter: "{{ vcenter_datacenter }}"
+    cluster: "{{ vcenter_cluster }}"
+    datastore: "{{ vcenter_datastore }}"
+    folder: "/{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
+    name: "{{ vm_name }}"
+    hardware:
+      num_cpus: "{{ vm_cpus }}"
+      memory_mb: "{{ vm_mem }}"
+      hotadd_cpu: yes
+      hotadd_memory: yes
+      hotremove_cpu: yes
+    disk:
+      - size_gb: "{{ vm_disk }}"
+    networks:
+    - name: "{{ vcenter_pg  }}"
+      connected: yes
+      device_type: vmxnet3
+      ip: "{{ ip }}"
+      gateway: "{{ gateway }}"
+      netmask: "{{ netmask }}"
+    customization:
+      hostname: "{{ vm_name }}"
+      dns_servers:
+        - 10.0.20.10
+        - 10.0.20.11
+    state: poweredon
+    wait_for_ip_address: yes
