@@ -2,3 +2,6 @@
 playbooks/tags-test.yml
 roles/tags-test/
 hosts-test
+
+# Exclude ansible.cfg as this is picked up on dev machines as the main file. This results in the wrong roles path being used when executing ansible-playbook.
+ansible.cfg
