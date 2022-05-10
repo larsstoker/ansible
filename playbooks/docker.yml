@@ -10,4 +10,4 @@
 
     - name: Include firewall-cmd role
       import_role:
-        name: firewall-cmd
+        name: firewalld
