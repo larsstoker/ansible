@@ -1,0 +1,9 @@
+---
+- hosts: all
+  remote_user: ansible
+  become: true
+
+  tasks:
+    - name: Import update role
+      import_role:
+        name: update
