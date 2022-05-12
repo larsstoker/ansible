@@ -15,8 +15,6 @@
     permanent: yes
     immediate: yes
     state: enabled
-  command:
-    cmd: firewall-cmd --add-masquerade --permanent
   notify: reload firewalld
   tags:
     - swarm
