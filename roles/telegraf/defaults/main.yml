@@ -1,0 +1,8 @@
+---
+telegraf_version: 1.22.3
+telegraf_win_install_dir: 'C:\Program Files\Telegraf'
+telegraf_win_include: 'C:\Program Files\Telegraf\telegraf_agent.d'
+telegraf_win_service_args:
+  - -service install
+  - -config "C:\Program Files\Telegraf\telegraf.conf"
+  - -config-directory "C:\Program Files\Telegraf\telegraf_agent.d"
