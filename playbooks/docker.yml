@@ -1,7 +1,5 @@
 ---
 - hosts: all
-  remote_user: ansible
-  become: true
   
   tasks:
     - name: Include docker role
