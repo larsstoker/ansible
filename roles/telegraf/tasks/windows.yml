@@ -1,0 +1,106 @@
+---
+- name: Create Telegraf folder
+  win_file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ telegraf_win_install_dir  }}"
+    - "{{ telegraf_win_include  }}"
+  tags:
+    - install
+
+- name: Download Telegraf zip
+  win_get_url:
+    url: https://dl.influxdata.com/telegraf/releases/telegraf-{{ telegraf_version }}_windows_amd64.zip
+    dest: '{{ telegraf_win_install_dir }}\\telegraf-{{ telegraf_version }}_windows_amd64.zip'
+  tags:
+    - install
+
+- name: Unzip file
+  win_unzip:
+    src: '{{ telegraf_win_install_dir }}\\telegraf-{{ telegraf_version }}_windows_amd64.zip'
+    dest: "{{ telegraf_win_install_dir }}"
+    creates: '{{ telegraf_win_install_dir }}\\telegraf-{{ telegraf_version }}\telegraf.exe'
+    delete_archive: yes
+  tags:
+    - install
+
+- name: Move extracted executable
+  win_copy:
+    src: '{{ telegraf_win_install_dir }}\\telegraf-{{ telegraf_version }}\telegraf.exe'
+    dest: '{{ telegraf_win_install_dir }}\telegraf.exe'
+    remote_src: yes
+  tags:
+    - install
+
+- name: Copy config
+  win_copy:
+    src: telegraf-windows.conf
+    dest: '{{ telegraf_win_install_dir }}\\telegraf.conf'
+    force: yes
+  notify: restart telegraf windows
+  tags:
+    - configure
+
+- name: "Check if telegraf service already exists"
+  win_service:
+    name: telegraf
+  register: service_result
+  failed_when: service_result is not defined
+  tags:
+    - configure
+
+- name: "Set Telegraf service startup mode to auto and ensure it's stopped"
+  win_service:
+    name: Telegraf
+    start_mode: auto
+    state: stopped
+  when:
+    - service_result.exists
+  tags:
+    - configure
+
+- name: "Unregister Telegraf service"
+  win_command: 'telegraf.exe --service uninstall'
+  register: telegraf_windows_uninstall
+  args:
+    chdir: 'C:\Program Files\Telegraf'
+  when:
+    - service_result.exists
+  tags:
+    - configure
+
+- name: "Register Telegraf service"
+  win_command: 'telegraf.exe {{ telegraf_win_service_args | join(" ") }}'
+  register: telegraf_windows_install
+  args:
+    chdir: 'C:\Program Files\Telegraf'
+  tags:
+    - configure
+
+- name: "Set Telegraf service startup mode to auto and ensure it's started"
+  win_service:
+    name: Telegraf
+    start_mode: auto
+    state: started
+  tags:
+    - configure
+
+- name: "Cleanup folder structure"
+  win_file:
+    path: '{{ telegraf_win_install_dir }}\\telegraf-{{ telegraf_version }}'
+    state: absent
+  tags:
+    - install
+
+- name: "Check if telegraf service is up and running"
+  win_service:
+    name: telegraf
+  register: final_result
+  failed_when: final_result is not defined
+  tags:
+    - always
+
+- debug: msg={{ final_result.state }}
+  tags:
+    - always
