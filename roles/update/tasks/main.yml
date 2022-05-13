@@ -6,5 +6,5 @@
 
 - name: Include distribution tasks (Windows)
   include_tasks: "windows.yml"
-  when: ansible_distribution == "Windows"
+  when: ansible_os_family == "Windows"
   tags: always
