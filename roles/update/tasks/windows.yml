@@ -1,0 +1,21 @@
+---
+- name: Install all critical and security updates
+  win_updates:
+    category_names:
+      - CriticalUpdates
+      - SecurityUpdates
+    state: installed
+    reboot: false
+  tags:
+    - never
+
+- name: Install all critical and security updates
+  win_updates:
+    category_names:
+      - CriticalUpdates
+      - SecurityUpdates
+    state: installed
+    reboot: true
+  tags:
+    - allow-restart
+    - never
