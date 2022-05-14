@@ -1,0 +1,16 @@
+---
+- hosts: all
+  
+  tasks:
+    - name: Include telegraf role
+      import_role:
+        name: telegraf
+      tags:
+        - install
+        - configure
+
+    - name: Include service-status role
+      import_role:
+        name: service-status
+      vars:
+        service: telegraf
