@@ -1,0 +1,29 @@
+---
+- name: "Check single service"
+  systemd:
+    name: "{{ service }}"
+  register: "check_single_service_result"
+  failed_when: check_single_service_result is not defined
+  when: service is defined
+
+- debug:
+    msg: 
+      - "{{ check_single_service_result.status.Names }} = {{ check_single_service_result.status.SubState }}"
+  when: service is defined
+
+- name: "Check multiple services"
+  systemd:
+    name: "{{ item }}"
+  with_items:
+    - "{{ services }}"
+  register: "check_multiple_services_result"
+  failed_when: check_multiple_services_result is not defined
+  when: services is defined
+
+- debug:
+    msg: "{% set output = [] %}\
+        {% for result in check_multiple_services_result.results %}\
+          {{ output.append( result.status.Names ~ ' = ' ~ result.status.SubState) }}\
+        {% endfor %}\
+      {{ output }}"
+  when: services is defined
