@@ -92,15 +92,3 @@
     state: absent
   tags:
     - install
-
-- name: "Check if telegraf service is up and running"
-  win_service:
-    name: telegraf
-  register: final_result
-  failed_when: final_result is not defined
-  tags:
-    - always
-
-- debug: msg={{ final_result.state }}
-  tags:
-    - always
