@@ -5,9 +5,9 @@
     - name: Include telegraf role
       import_role:
         name: telegraf
-      tags:
-        - install
-        - configure
+      vars:
+        install: true
+        configure: true          
 
     - name: Include service-status role
       import_role:
