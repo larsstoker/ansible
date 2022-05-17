@@ -1,0 +1,66 @@
+---
+- name: Clone VM from template (static)
+  vmware_guest:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: no
+    template: "{{ vcenter_template }}"
+    datacenter: "{{ vcenter_datacenter }}"
+    cluster: "{{ vcenter_cluster }}"
+    datastore: "{{ vcenter_datastore }}"
+    folder: "/{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
+    name: "{{ vm_name }}"
+    hardware:
+      num_cpus: "{{ vm_cpus }}"
+      memory_mb: "{{ vm_mem }}"
+      hotadd_cpu: yes
+      hotadd_memory: yes
+      hotremove_cpu: yes
+    disk:
+      - size_gb: "{{ vm_disk }}"
+    networks:
+    - name: "{{ vcenter_pg  }}"
+      connected: yes
+      device_type: vmxnet3
+      ip: "{{ vm_ip }}"
+      netmask: "{{ vm_subnet }}"
+      gateway: "{{ vm_gateway }}"
+    customization:
+      hostname: "{{ vm_name }}"
+      dns_servers:
+        - 10.0.20.10
+        - 10.0.20.11
+    state: poweredon
+    wait_for_ip_address: yes
+  when: network_type == "static"
+
+- name: Clone VM from template (dhcp)
+  vmware_guest:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: no
+    template: "{{ vcenter_template }}"
+    datacenter: "{{ vcenter_datacenter }}"
+    cluster: "{{ vcenter_cluster }}"
+    datastore: "{{ vcenter_datastore }}"
+    folder: "/{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
+    name: "{{ vm_name }}"
+    hardware:
+      num_cpus: "{{ vm_cpus }}"
+      memory_mb: "{{ vm_mem }}"
+      hotadd_cpu: yes
+      hotadd_memory: yes
+      hotremove_cpu: yes
+    disk:
+      - size_gb: "{{ vm_disk }}"
+    networks:
+    - name: "{{ vcenter_pg  }}"
+      connected: yes
+      device_type: vmxnet3
+    customization:
+      hostname: "{{ vm_name }}"
+    state: poweredon
+    wait_for_ip_address: yes
+  when: network_type == "dhcp"
