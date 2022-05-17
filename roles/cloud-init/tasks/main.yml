@@ -4,3 +4,4 @@
     path: /etc/cloud/cloud-init.disabled
     state: touch
   become: yes
+  when: disable | default(false)
