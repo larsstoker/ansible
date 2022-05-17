@@ -4,9 +4,6 @@
   vars:
     ansible_become: true
   when: ansible_distribution == "Rocky"
-  tags: always
-
 - name: Include distribution tasks (Windows)
   include_tasks: "windows.yml"
   when: ansible_os_family == "Windows"
-  tags: always
