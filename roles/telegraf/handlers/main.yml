@@ -3,6 +3,7 @@
   service:
     name: telegraf
     state: restarted
+  become: true
 
 - name: restart telegraf windows
   win_service:
