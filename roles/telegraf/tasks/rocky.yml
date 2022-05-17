@@ -6,29 +6,25 @@
     baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
     gpgcheck: yes
     gpgkey: https://repos.influxdata.com/influxdb.key
-  tags:
-    - install
+  when: install | default(false)
 
 - name: Install Telegraf
   yum:
     name: telegraf
     state: latest
-  tags:
-    - install
+  when: install | default(false)
 
 - name: Enable Telegraf service
   service:
     name: telegraf
     enabled: yes
-  tags:
-    - install
-
+  when: install | default(false)
+    
 - name: Start Telegraf service
   service:
     name: telegraf
     state: started
-  tags:
-    - install
+  when: install | default(false)
 
 - name: Copy config
   copy:
@@ -41,5 +37,6 @@
     force: yes
   notify:
     - restart telegraf
-  tags:
-    - configure
+  when: configure | default(false)
+
+- meta: flush_handlers
