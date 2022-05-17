@@ -1,3 +1,5 @@
+vcenter_host: "vcsa.ad.snowlab.xyz"
+vcenter_usr: "ansible"
 vcenter_cluster: "vSAN Cluster"
-vcenter_datacenter: Home
-vcenter_folder: STAGING
+vcenter_datacenter: "Home"
+vcenter_datastore: "vSAN-Datastore"
