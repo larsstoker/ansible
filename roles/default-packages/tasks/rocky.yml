@@ -3,5 +3,3 @@
   dnf:
     name: "{{ default_packages }}"
     state: present
-  tags:
-    - install
