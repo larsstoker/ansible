@@ -1,0 +1,40 @@
+---
+- hosts: all
+
+  tasks:
+    - name: Import cloud-init role
+      import_role:
+        name: cloud-init
+      vars:
+        disable: true
+
+    - name: Import update role
+      import_role:
+        name: update
+      vars:
+        update: true
+        allow_restart: true
+      
+    - name: Import default-packages role
+      import_role:
+        name: default-packages
+
+    - name: Import telegraf role
+      import_role:
+        name: telegraf
+      vars:
+        install: true
+        configure: true
+
+    - name: Import service-status role to verify telegraf service status
+      import_role:
+        name: service-status
+      vars:
+        service: telegraf
+
+    - name: Import active-directory role
+      import_role:
+        name: active-directory
+      vars:
+        install: true
+        configure: true
