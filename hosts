@@ -1,6 +1,15 @@
 all:
   children:
-    dev:
+    linux:
       hosts:
-        AnsibleTest01:
-          ansible_host: 10.0.20.101
+        VNLHPROD-MGR01:
+        VNLHPROD-MGR02:
+        VNLHPROD-MGR03:
+        VNLHPROD-WKR01:
+        VNLHPROD-WKR02:
+        VNLHPROD-WKR03:
+        VNLHPROD-AUT01:
+        VNLHPROD-CFG01:
+        VNLHPROD-SQL01:
+      vars:
+        ansible_user: ansible
