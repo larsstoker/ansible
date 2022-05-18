@@ -13,3 +13,4 @@ all:
         VNLHPROD-SQL01.ad.snowlab.xyz:
       vars:
         ansible_user: ansible
+        ansible_python_interpreter: /usr/libexec/platform-python
