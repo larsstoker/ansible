@@ -8,4 +8,4 @@
     backup: yes
   become: yes
   notify:
-    - restart sshh
+    - restart sshd
