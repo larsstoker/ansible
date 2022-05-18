@@ -1,0 +1,7 @@
+---
+- hosts: all
+
+  tasks:
+    - name: Import disable-root-ssh role
+      import_role:
+        name: disable-root-ssh 
