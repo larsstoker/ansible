@@ -2,3 +2,17 @@
 - name: Include clone vm from template task
   include_tasks: "clone-vm-from-template.yml"
   when: task == "clone-vm-from-template"
+
+- name: Add group to object
+  vmware_object_role_permission:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: no
+    role: "{{ vcenter_role }}"
+    group: "{{ vcenter_group }}"
+    object_name: "{{ vcenter_object_name }}"
+    object_type: "{{ vcenter_object_type }}"
+    state: present
+    recursive: "{{ vcenter_ }}"
+  when: task == "add-group-permission"
