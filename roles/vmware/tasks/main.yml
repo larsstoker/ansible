@@ -28,3 +28,17 @@
     folder_type: vm
     state: present
   when: task == "create-vm-folder"
+
+- name: Create recourse pool
+  vmware_resource_pool:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: no
+    datacenter: "{{ vcenter_datacenter }}"
+    cluster: "{{ vcenter_cluster }}"
+    resource_pool: "{{ vcenter_resource_pool_name }}"
+    cpu_limit: "{{ vcenter_cpu_limit }}"
+    mem_limit: "{{ vcenter_mem_limit }}"
+    state: present
+  when: task == "create-resource-pool"
