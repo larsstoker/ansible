@@ -16,3 +16,15 @@
     state: present
     recursive: "{{ vcenter_ }}"
   when: task == "add-group-permission"
+
+- name: Create VM folder
+  vcenter_folder:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: no
+    datacenter: "{{ vcenter_datacenter }}"
+    folder_name: "{{ vcenter_folder_name }}"
+    folder_type: vm
+    state: present
+  when: task == "create-vm-folder"
