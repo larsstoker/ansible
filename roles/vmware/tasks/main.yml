@@ -14,7 +14,7 @@
     object_name: "{{ vcenter_object_name }}"
     object_type: "{{ vcenter_object_type }}"
     state: present
-    recursive: "{{ vcenter_ }}"
+    recursive: "{{ vcenter_propagate }}"
   when: task == "add-group-permission"
 
 - name: Create VM folder
