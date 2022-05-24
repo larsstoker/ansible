@@ -12,8 +12,6 @@ ad_packages:
   - openldap-clients
   - python3-pip
 
-ad_usr: ldap
-ad_pwd: ZbMx*R**bsczJi5P%3UhMZdG
 ad_domain: AD.SNOWLAB.XYZ
 ad_ou: OU=Linux,OU=Servers,OU=Snowlab,DC=ad,DC=snowlab,DC=xyz
 ad_admin_group: CN="Linux Admins",OU=Groups,OU=Snowlab,DC=ad,DC=snowlab,DC=xyz
