@@ -9,7 +9,7 @@ steps:
       - name: host-ansible
         path: /tmp/ansible
     commands:
-      - rm -R /tmp/ansible/playbooks/* /tmp/ansible/roles/*
+      - rm -R /tmp/ansible/playbooks/* /tmp/ansible/roles/* -f
       - cp -R /drone/src/* /tmp/ansible/
       
 volumes:
