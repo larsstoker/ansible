@@ -3,7 +3,6 @@
 
   vars_files:
     - vars/vault.yml
-    - vars/ad.yml
 
   tasks:
     - name: Import Active Directory role
