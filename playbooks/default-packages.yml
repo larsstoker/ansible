@@ -1,7 +1,0 @@
----
-- hosts: all
-
-  tasks:
-    - name: Import default-packages role
-      import_role:
-        name: default-packages
