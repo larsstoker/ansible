@@ -5,7 +5,7 @@
     - vars/vault.yml
 
   tasks:
-    - name: Include telegraf role
+    - name: Include docker role
       import_role:
         name: docker
       vars:
