@@ -41,3 +41,4 @@
       vars:
         install: true
         configure: true
+        join: true
