@@ -1,0 +1,20 @@
+---
+- hosts: all
+
+  vars_files:
+    - vars/vault.yml
+
+  tasks:
+    - name: Include telegraf role
+      import_role:
+        name: docker
+      vars:
+        install: true
+        swarm: true
+        allow_restart: true
+
+    - name: Include service-status role
+      import_role:
+        name: service-status
+      vars:
+        service: docker
