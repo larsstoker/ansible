@@ -10,3 +10,6 @@ ansible.cfg
 
 # Exclude vault.yml
 vault.yml
+
+# Exclude vars/ dir
+vars/
