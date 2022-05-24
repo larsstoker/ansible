@@ -1,0 +1,13 @@
+---
+- hosts: all
+
+  vars_files:
+    - vars/vault.yml
+
+  tasks:
+    - name: Import update role
+      import_role:
+        name: update
+      vars:
+        update: true
+        allow_restart: true
