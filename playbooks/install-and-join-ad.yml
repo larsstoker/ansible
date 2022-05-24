@@ -1,0 +1,15 @@
+---
+- hosts: all
+
+  vars_files:
+    - vars/vault.yml
+    - vars/ad.yml
+
+  tasks:
+    - name: Import Active Directory role
+      import_role:
+        name: active-directory
+      vars:
+        install: true
+        configure: true
+        join: true
