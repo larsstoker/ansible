@@ -1,0 +1,11 @@
+---
+- hosts: all
+  
+  tasks:
+    - name: Include docker role
+      import_role:
+        name: docker
+
+    - name: Include firewall-cmd role
+      import_role:
+        name: firewalld

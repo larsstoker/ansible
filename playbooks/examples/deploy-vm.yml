@@ -1,0 +1,53 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  vars_prompt:
+    - name: vcenter_usr
+      prompt: vCenter user
+      private: no
+
+    - name: vcenter_pwd
+      prompt: vCenter password
+      private: yes
+      encrypt: sha512_crypt
+      confirm: yes
+      salt_size: 7
+
+    - name: vcenter_template
+      prompt: Template name 
+      private: no
+
+    - name: vm_name
+      prompt: Virtual machine name 
+      private: no
+
+    - name: vm_cpus
+      prompt: Number of cpus 
+      private: no
+
+    - name: vm_mem
+      prompt: Amount of memory (mb) 
+      private: no
+
+    - name: vm_disk
+      prompt: Disk size (gb)
+      private: no
+
+    - name: vcenter_pg
+      prompt: vCenter port group
+      private: no
+
+    - name: vm_ip
+      prompt: IP address (optional)
+
+    - name: vm_subnet (optional)
+      prompt: Subnet
+
+    - name: vm_gateway (optional)
+      prompt: Gateway
+
+  tasks:
+    - name: Import VMware role
+      import_role:
+        name: vmware

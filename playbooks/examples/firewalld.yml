@@ -1,0 +1,7 @@
+---
+- hosts: all
+
+  tasks:
+    - name: Import firewalld role
+      import_role:
+        name: firewalld
