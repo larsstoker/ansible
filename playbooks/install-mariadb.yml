@@ -1,0 +1,19 @@
+---
+- hosts: all
+
+  vars_files:
+    - vars/vault.yml
+
+  tasks:
+    - name: Include mariadb role
+      import_role:
+        name: mariadb
+      vars:
+        install: true
+        secure: true   
+
+    - name: Include service-status role
+      import_role:
+        name: service-status
+      vars:
+        service: mariadb
