@@ -13,3 +13,6 @@ vault.yml
 
 # Exclude vars/ dir
 vars/
+
+# Exclude scripts/ dir
+scripts/
