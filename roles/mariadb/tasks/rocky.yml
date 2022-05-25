@@ -1,0 +1,86 @@
+---
+- name: Install Mariadb server
+  yum:
+    name: "{{ mariadb_packages }}"
+    state: present
+  notify: restart mariadb server
+  when: install | default(false)
+
+- meta: flush_handlers
+
+- name: Copy config
+  copy:
+    src: server.conf
+    dest: /etc/my.cnf.d/server.cnf
+  notify: restart mariadb server
+  when: install | default(false)
+
+- meta: flush_handlers
+
+- name: Create log directory
+  file:
+    state: directory
+    path: /var/log/mariadb
+    owner: mysql
+    group: mysql
+    mode: 0755
+  when: install | default(false)
+
+- name: Configure SELinux for the MariaDB log directory
+  sefcontext:
+    target: '/var/log/mariadb(/.*)?'
+    setype: mysqld_log_t
+    state: present
+  when: install | default(false)
+
+- name: Disable unix_socket plugin
+  shell: >
+    mysql -u root
+    -h localhost
+    -e "UPDATE mysql.user SET plugin = '' WHERE user = 'root'; FLUSH PRIVILEGES;"
+  when: secure | default(false)
+
+- name: Delete remote login connection
+  shell: >
+    mysql -u root
+    -h localhost
+    -e "delete from mysql.user where User='root' and Host NOT IN ('localhost', '127.0.0.1');"
+  when: secure | default(false)
+
+- name: Set MariaDB root password
+  mysql_user:
+    name: root
+    password: "{{ mariadb_pwd }}"
+    host: "{{ item }}"
+    login_user: root
+    login_unix_socket: "{{ mariadb_socket }}"
+    state: present
+  with_items:
+    - 127.0.0.1
+    - localhost
+  notify: flush priviliges
+  when: secure | default(false)
+
+- name: Remove all Anonymous users
+  mysql_user:
+    login_user: root
+    login_password: "{{ mariadb_pwd }}"
+    name: ''
+    host_all: yes
+    state: absent
+  notify: flush priviliges
+  when: secure | default(false)
+
+- name: Remove test database
+  mysql_db:
+    login_user: "root"
+    login_password: "{{ mariadb_pwd }}"
+    db: "test"
+    state: absent
+  register: remove_test_db
+  notify: flush priviliges
+  when: secure | default(false)
+
+- name: Remove test database priviledges
+  command: mysql -u root -p{{ mariadb_pwd }} -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'"
+  when: secure | default(false)

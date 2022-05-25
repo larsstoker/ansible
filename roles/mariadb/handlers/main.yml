@@ -1,0 +1,10 @@
+---
+- name: restart mariadb server
+  systemd:
+    name: mariadb
+    state: restarted
+    enabled: yes
+  become: true
+
+- name: flush priviliges
+  command: mysql -u root -p{{ mariadb_pwd }} -e "FLUSH PRIVILEGES"
