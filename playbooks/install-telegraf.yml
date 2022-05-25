@@ -1,6 +1,9 @@
 ---
 - hosts: all
-  
+
+  vars_files:
+    - vars/vault.yml
+
   tasks:
     - name: Include telegraf role
       import_role:

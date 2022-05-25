@@ -1,6 +1,9 @@
 ---
 - hosts: all
 
+  vars_files:
+    - vars/vault.yml
+
   tasks:
     - name: Import disable-root-ssh role
       import_role:
