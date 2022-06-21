@@ -1,0 +1,6 @@
+---
+- name: Include distribution tasks (Rocky)
+  include_tasks: "rocky.yml"
+  vars:
+    ansible_become: true
+  when: ansible_distribution == "Rocky"
