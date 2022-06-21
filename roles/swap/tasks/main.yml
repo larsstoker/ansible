@@ -1,0 +1,7 @@
+---
+- name: Disable swap
+  shell: |
+    sudo sed -i '/swap/d' /etc/fstab
+    sudo swapoff -a
+  become: true
+  when: disable | default(false)
