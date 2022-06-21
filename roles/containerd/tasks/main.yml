@@ -1,0 +1,10 @@
+---
+- name: Include distribution tasks (Rocky)
+  include_tasks: "rocky.yml"
+  vars:
+    ansible_become: true
+  when: ansible_distribution == "Rocky"
+
+- name: Include distribution tasks (Windows)
+  include_tasks: "windows.yml"
+  when: ansible_distribution == "Windows"
