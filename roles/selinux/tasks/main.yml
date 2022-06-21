@@ -1,0 +1,11 @@
+---
+- name: Disable SELinux
+  ansible.posix.selinux:
+    state: disabled
+  become: true
+  when: status == "disabled"
+
+- name: Reboot to apply SELinux settings
+  reboot:
+  become: true
+  when: allow_restart | default(false)
