@@ -1,0 +1,13 @@
+---
+- hosts: all
+
+  vars_files:
+    - vars/vault.yml
+  become: true
+
+  tasks:
+    - name: Include Kubernetes role
+      import_role:
+        name: kubernetes
+      vars:
+        join_cluster: true

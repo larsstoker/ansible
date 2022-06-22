@@ -3,6 +3,7 @@
 
   vars_files:
     - vars/vault.yml
+  become: true
 
   tasks:
     - name: Include SELinux role
@@ -22,6 +23,12 @@
         name: iptables
       vars:
         enable_bridged_traffic: true
+
+    - name: Include firewalld role
+      import_role:
+        name: firewalld
+      vars:
+        service: kube-apiserver
 
     - name: Include containerd role
       import_role:
