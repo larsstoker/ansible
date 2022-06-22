@@ -1,6 +1,106 @@
 ---
-- name: Include distribution tasks (Rocky)
-  include_tasks: "rocky.yml"
-  vars:
-    ansible_become: true
-  when: ansible_distribution == "Rocky"
+- name: Add Kubernetes repo
+  shell: |
+    cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+    [kubernetes]
+    name=Kubernetes
+    baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+    enabled=1
+    gpgcheck=1
+    repo_gpgcheck=1
+    gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    exclude=kubelet kubeadm kubectl
+    EOF
+  when: install | default(false)
+
+- name: Install Kubernetes
+  dnf:
+    name: "{{ kubernetes_packages }}"
+    disable_excludes: kubernetes
+  when: install | default(false)
+
+- name: Lock versions
+  shell: |
+    sudo dnf install yum-plugin-versionlock -y
+    sudo dnf versionlock kubelet kubeadm kubectl
+  when: install | default(false)
+
+- name: Enable and start kubelet
+  systemd:
+    name: kubelet
+    state: started
+    enabled: true
+  when: install | default(false)
+
+- name: Create cluster configuration
+  shell: |
+    sudo kubeadm config print init-defaults | tee ClusterConfiguration.yaml
+    sudo sed -i '/name/d' ClusterConfiguration.yaml
+    sudo sed -i 's/ advertiseAddress: 1.2.3.4/ advertiseAddress: {{ master_ip }}/' ClusterConfiguration.yaml
+    sudo sed -i 's/ criSocket: \/var\/run\/dockershim\.sock/ criSocket: \/run\/containerd\/containerd\.sock/' ClusterConfiguration.yaml
+  when: create_cluster | default(false)
+
+- name: Configure Cgroup driver
+  shell: |
+    sudo cat << EOF | cat >> ClusterConfiguration.yaml
+    ---
+    apiVersion: kubelet.config.k8s.io/v1beta1
+    kind: KubeletConfiguration
+    cgroupDriver: systemd
+    EOF
+  when: create_cluster | default(false)
+
+- name: Create cluster
+  shell: |
+    sudo kubeadm init --config=ClusterConfiguration.yaml
+    mkdir -p $HOME/.kube
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
+  when: create_cluster | default(false)
+
+- name: Setup Calico networking
+  shell: |
+    kubectl create -f https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml
+    kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+  when: create_cluster | default(false)
+
+- name: Get the join command
+  shell: |
+    kubeadm token create  --print-join-command
+  register: kubernetes_join_command
+  when: create_cluster | default(false)
+
+- name: Copy join command to local file
+  delegate_to: localhost
+  become: false
+  copy:
+    content: "{{ kubernetes_join_command.stdout_lines[0] }}"
+    dest: "/tmp/kubernetes_join_command"
+    mode: 0777
+    force: true
+  when: create_cluster | default(false)
+
+- name: Add ignore preflight errors to join command
+  command: sed -i 's/$/ --ignore-preflight-errors=All/' /tmp/kubernetes_join_command
+  become: false
+  delegate_to: localhost
+  when: create_cluster | default(false)
+
+- name: Wait for the join command file to be available
+  wait_for:
+    path: /tmp/kubernetes_join_command
+    timeout: 1800
+  delegate_to: localhost
+  become: false
+  when: join_cluster | default(false)
+
+- name: Copy join command
+  copy:
+    src: "/tmp/kubernetes_join_command"
+    dest: "/tmp/kubernetes_join_command"
+    mode: 0777
+  when: join_cluster | default(false)
+
+- name: Join cluster
+  command: "sh /tmp/kubernetes_join_command"
+  when: join_cluster | default(false)
