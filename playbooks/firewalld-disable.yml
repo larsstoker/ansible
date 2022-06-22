@@ -1,0 +1,18 @@
+---
+- hosts: all
+
+  vars_files:
+    - vars/vault.yml
+
+  tasks:
+    - name: Include firewalld role
+      import_role:
+        name: firewalld
+      vars:
+        disable: true
+
+    - name: Include service-status role
+      import_role:
+        name: service-status
+      vars:
+        service: firewalld
