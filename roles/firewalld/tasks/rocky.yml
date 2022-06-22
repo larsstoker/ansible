@@ -16,3 +16,12 @@
     state: enabled
   notify: reload firewalld
   when: swarm | default(false)
+
+- name: Add kube-apiserver to firewalld
+  firewalld:
+    service: kube-apiserver
+    permanent: yes
+    immediate: yes
+    state: enabled
+  notify: reload firewalld
+  when: service == "kube-apiserver"
