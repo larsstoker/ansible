@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+
+  vars_files:
+    - vars/vault.yml
+
+  tasks:
+    - name: Set MTU to 9000
+      command: sed -i -e '$aMTU={{ mtu }}' /etc/sysconfig/network-scripts/ifcfg-{{ ifname }}
+
+    - name: Reboot to apply settings
+      reboot:
