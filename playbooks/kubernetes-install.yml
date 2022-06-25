@@ -28,7 +28,7 @@
       import_role:
         name: firewalld
       vars:
-        service: kube-apiserver
+        disable: true
 
     - name: Include containerd role
       import_role:
