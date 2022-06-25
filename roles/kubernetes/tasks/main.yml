@@ -32,6 +32,11 @@
     enabled: true
   when: install | default(false)
 
+- name: Enable kubectl autocomplete
+  shell: |
+    kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl > /dev/null
+  when: install | default(false)
+
 - name: Create cluster configuration
   shell: |
     sudo kubeadm config print init-defaults | tee ClusterConfiguration.yaml
@@ -84,6 +89,10 @@
   command: sed -i 's/$/ --ignore-preflight-errors=All/' /tmp/kubernetes_join_command
   become: false
   delegate_to: localhost
+  when: create_cluster | default(false)
+
+- name: Add node-type=master label to master
+  command: kubectl label nodes {{ master_host }} node-type=master
   when: create_cluster | default(false)
 
 - name: Wait for the join command file to be available
