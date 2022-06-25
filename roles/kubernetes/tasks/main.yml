@@ -103,4 +103,5 @@
 
 - name: Join cluster
   command: "sh /tmp/kubernetes_join_command"
+  ignore_errors: true
   when: join_cluster | default(false)
