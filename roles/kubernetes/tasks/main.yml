@@ -95,6 +95,46 @@
   command: kubectl label nodes {{ master_host }} node-type=master
   when: create_cluster | default(false)
 
+- name: Remove taint from master
+  shell: |
+    kubectl taint nodes {{ master_host }} node-role.kubernetes.io/master=:NoSchedule-
+    kubectl taint nodes {{ master_host }} node-role.kubernetes.io/control-plane=:NoSchedule-
+  when: create_cluster | default(false)
+
+- name: Enable script ARP mode for MetalLB
+  shell: |
+    kubectl get configmap kube-proxy -n kube-system -o yaml | \
+    sed -e "s/strictARP: false/strictARP: true/" | \
+    kubectl diff -f - -n kube-system
+    kubectl get configmap kube-proxy -n kube-system -o yaml | \
+    sed -e "s/strictARP: false/strictARP: true/" | \
+    kubectl apply -f - -n kube-system
+  when: create_cluster | default(false)
+
+- name: Install MetalLB
+  shell: |
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb_version }}/manifests/namespace.yaml
+    kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/{{ metallb_version }}//manifests/metallb.yaml
+  when: create_cluster | default(false)
+
+- name: Configure MetalLB
+  shell: |
+    cat <<EOF | kubectl apply -f -
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      namespace: metallb-system
+      name: config
+    data:
+      config: |
+        address-pools:
+        - name: default
+          protocol: layer2
+          addresses:
+          - {{ metallb_address_range }}
+    EOF
+  when: create_cluster | default(false)
+
 - name: Wait for the join command file to be available
   wait_for:
     path: /tmp/kubernetes_join_command
