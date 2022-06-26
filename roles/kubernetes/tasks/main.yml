@@ -101,7 +101,7 @@
     kubectl taint nodes {{ master_host }} node-role.kubernetes.io/control-plane=:NoSchedule-
   when: create_cluster | default(false)
 
-- name: Enable script ARP mode for MetalLB
+- name: Enable strict ARP mode for MetalLB
   shell: |
     kubectl get configmap kube-proxy -n kube-system -o yaml | \
     sed -e "s/strictARP: false/strictARP: true/" | \
