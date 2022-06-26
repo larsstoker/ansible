@@ -3,3 +3,6 @@ kubernetes_packages:
   - kubelet 
   - kubeadm
   - kubectl
+
+metallb_version: "v0.12.1"
+metallb_address_range: "10.0.20.230-10.0.20.250"
