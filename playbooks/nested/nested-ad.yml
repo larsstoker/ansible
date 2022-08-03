@@ -1,0 +1,42 @@
+---
+- hosts: domain_controllers
+  
+  vars_files:
+    - ../vars/vault.yml
+
+  tasks:
+    # Create
+    - name: Create AD Group "{{ ad_group_name }}"
+      win_domain_group:
+        domain_username: "{{ ansible_user }}"
+        domain_password: "{{ ansible_password }}"
+        name: "{{ ad_group_name }}"
+        description: "{{ ad_group_description }}"
+        scope: global
+        path: "{{ ad_group_path }}"
+      when: action == "create"
+    
+    - name: Add "{{ ad_group_name }}" to "{{ ad_group_memberof }}"
+      win_domain_group_membership:
+        domain_username: "{{ ansible_user }}"
+        domain_password: "{{ ansible_password }}"
+        name: "{{ ad_group_memberof }}"
+        members: "{{ ad_group_name }}"
+      when: action == "create"
+
+    - name: Add "{{ ad_group_members }}" to "{{ ad_group_name }}"
+      win_domain_group_membership:
+        domain_username: "{{ ansible_user }}"
+        domain_password: "{{ ansible_password }}"
+        name: "{{ ad_group_name }}"
+        members: "{{ ad_group_members }}"
+      when: action == "create"
+
+    # Delete
+    - name: Remove AD Group "{{ ad_group_name }}"
+      community.windows.win_domain_group:
+        domain_username: "{{ ansible_user }}"
+        domain_password: "{{ ansible_password }}"
+        name: "{{ ad_group_name }}"
+        state: absent
+      when: action == "delete"
