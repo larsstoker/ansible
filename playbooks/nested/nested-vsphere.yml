@@ -1,0 +1,179 @@
+---
+- hosts: localhost
+
+  vars_files:
+    - ../vars/vault.yml
+    - ../vars/vcenter.yml
+
+  tasks:
+    # Create
+    - name: Create recourse pool "{{ vcenter_resource_pool_name }}"
+      vmware_resource_pool:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        datacenter: "{{ vcenter_datacenter }}"
+        cluster: "{{ vcenter_cluster }}"
+        resource_pool: "{{ vcenter_resource_pool_name }}"
+        cpu_limit: "{{ vcenter_resource_pool_cpu_limit }}"
+        mem_limit: "{{ vcenter_resource_pool_mem_limit }}"
+        state: present
+      when: action == "create"
+
+    - name: Assign group "{{ ad_group_name }}" to resource pool "{{ vcenter_resource_pool_name }}"
+      vmware_object_role_permission:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        object_name: "{{ vcenter_resource_pool_name }}"
+        object_type: "ResourcePool"
+        group: "{{ ad_group_name }}"
+        role: "{{ vcenter_resource_pool_role }}"
+        state: present
+        recursive: "{{ vcenter_resource_pool_role_propagate }}"
+      when: action == "create"
+
+    - name: Create VM folder "{{ vcenter_vm_folder_name }}"
+      vcenter_folder:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        datacenter: "{{ vcenter_datacenter }}"
+        folder_name: "{{ vcenter_vm_folder_name }}"
+        parent_folder: "{{ vcenter_vm_folder_parent }}"
+        folder_type: vm
+        state: present
+      when: action == "create"
+
+    - name: Assign group "{{ ad_group_name }}" to folder "{{ vcenter_vm_folder_name }}"
+      vmware_object_role_permission:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        object_name: "{{ vcenter_vm_folder_name }}"
+        object_type: "Folder"
+        group: "{{ ad_group_name }}"
+        role: "{{ vcenter_vm_folder_role }}"
+        state: present
+        recursive: "{{ vcenter_vm_folder_role_propagate }}"
+      when: action == "create"
+
+    - name: Create trunk vDPG "{{ vcenter_dvs_portgroup_trunk_name }}"
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        switch_name: "{{ vcenter_dvs_switch_name }}"
+        portgroup_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
+        vlan_trunk: true
+        vlan_id: "{{ vcenter_dvs_portgroup_trunk_range }}"
+        num_ports: 8
+        port_binding: static
+        state: present
+      when: action == "create"
+
+    - name: Assign group "{{ ad_group_name }}" to vDPG "{{ vcenter_dvs_portgroup_trunk_name }}"
+      vmware_object_role_permission:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        object_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
+        object_type: "DistributedVirtualPortgroup"
+        group: "{{ ad_group_name }}"
+        role: "{{ vcenter_dvs_role }}"
+        state: present
+        recursive: "{{ vcenter_dvs_role_propagate }}"
+      when: action == "create"
+
+    - name: Create vDPG "{{ vcenter_dvs_portgroup_name }}"
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        switch_name: "{{ vcenter_dvs_switch_name }}"
+        portgroup_name: "{{ item }}"
+        vlan_trunk: false
+        vlan_id: "{{ item | regex_search('[0-9]*$') }}"
+        num_ports: 50
+        port_binding: static
+        state: present
+      with_items: "{{ vcenter_dvs_portgroup_name }}"
+      when: action == "create"
+
+    - name: Assign group "{{ ad_group_name }}" to vDPG "{{ vcenter_dvs_portgroup_name }}"
+      vmware_object_role_permission:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        object_name: "{{ item }}"
+        object_type: "DistributedVirtualPortgroup"
+        group: "{{ ad_group_name }}"
+        role: "{{ vcenter_dvs_role }}"
+        state: present
+        recursive: "{{ vcenter_dvs_role_propagate }}"
+      with_items: "{{ vcenter_dvs_portgroup_name }}"
+      when: action == "create"
+
+      # Delete
+    - name: Delete recourse pool "{{ vcenter_resource_pool_name }}"
+      vmware_resource_pool:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        datacenter: "{{ vcenter_datacenter }}"
+        cluster: "{{ vcenter_cluster }}"
+        resource_pool: "{{ vcenter_resource_pool_name }}"
+        state: absent
+      when: action == "delete"
+
+    - name: Delete VM folder "{{ vcenter_vm_folder_name }}"
+      vcenter_folder:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        datacenter: "{{ vcenter_datacenter }}"
+        folder_name: "{{ vcenter_vm_folder_name }}"
+        folder_type: vm
+        state: absent
+      when: action == "delete"
+
+    - name: Create trunk vDPG "{{ vcenter_dvs_portgroup_trunk_name }}"
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        switch_name: "{{ vcenter_dvs_switch_name }}"
+        portgroup_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
+        vlan_trunk: true
+        vlan_id: "{{ vcenter_dvs_portgroup_trunk_range }}"
+        num_ports: 8
+        port_binding: static
+        state: absent
+      when: action == "delete"
+
+    - name: Delete vDPG "{{ vcenter_dvs_portgroup_name }}"
+      vmware_dvs_portgroup:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_usr }}"
+        password: "{{ vcenter_pwd }}"
+        validate_certs: no
+        switch_name: "{{ vcenter_dvs_switch_name }}"
+        portgroup_name: "{{ item }}"
+        vlan_trunk: false
+        vlan_id: "{{ item | regex_search('[0-9]*$') }}"
+        num_ports: 50
+        port_binding: static
+        state: absent
+      with_items: "{{ vcenter_dvs_portgroup_name }}"
+      when: action == "delete"
