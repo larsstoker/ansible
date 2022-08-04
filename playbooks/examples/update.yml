@@ -1,9 +1,0 @@
----
-- hosts: all
-
-  tasks:
-    - name: Import update role
-      import_role:
-        name: update
-      vars:
-        update: true

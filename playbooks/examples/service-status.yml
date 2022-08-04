@@ -1,7 +1,0 @@
----
-- hosts: all
-  
-  tasks:
-    - name: Include service-status role
-      import_role:
-        name: service-status
