@@ -11,8 +11,10 @@ steps:
     commands:
       - rm -R /tmp/ansible/playbooks/* /tmp/ansible/roles/* -f
       - cp -R /drone/src/* /tmp/ansible/
-      
+      - chown -R root:1565204120 /tmp/ansible
+      - chmod -R 771 /tmp/ansible
+
 volumes:
 - name: host-ansible
   host:
-    path: /etc/ansible
+    path: /opt/automation/ansible
