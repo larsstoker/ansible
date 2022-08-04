@@ -4,28 +4,33 @@
 
   tasks:
     # Create
-    - name: Create Terraform project directory "{{ terraform_dir }}/{{ terraform_project_name }}"
+    - name: Create Terraform project directory "{{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}"
       shell: |
-        cp -R {{ terraform_dir }}/nested-lab {{ terraform_dir }}/{{ terraform_project_name }}
+        cp -R {{ terraform_dir }}/nested-lab {{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}
+      when: action == "create"
+
+    - name: Change source path
+      shell: |
+        sed -i "s#../modules/deploy_opnsense#../../modules/deploy_opnsense#" {{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}/main.tf
       when: action == "create"
 
     - name: Invoke Terraform and initialize project directory
       shell: |
-        terraform  -chdir={{ terraform_dir }}/{{ terraform_project_name }} init
+        terraform  -chdir={{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }} init
       when: action == "create"
 
     - name: Invoke Terraform and deploy virtual router
       shell: |
-        terraform -chdir={{ terraform_dir }}/{{ terraform_project_name }} apply --auto-approve  -var=config_file_path={{ terraform_path_to_config_file }}
+        terraform -chdir={{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }} apply --auto-approve  -var=config_file_path={{ terraform_path_to_config_file }}
       when: action == "create"
 
     # Delete
     - name: Invoke Terraform and destroy virtual router
       shell: |
-        terraform -chdir={{ terraform_dir }}/{{ terraform_project_name }} destroy --auto-approve -var=config_file_path={{ terraform_path_to_config_file }}
+        terraform -chdir={{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }} destroy --auto-approve -var=config_file_path={{ terraform_path_to_config_file }}
       when: action == "delete"
 
-    - name: Remove Terraform project directory "{{ terraform_dir }}/{{ terraform_project_name }}"
+    - name: Remove Terraform project directory "{{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}"
       shell: |
-        rm -R {{ terraform_dir }}/{{ terraform_project_name }}
+        rm -R {{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}
       when: action == "delete"
