@@ -21,7 +21,7 @@
 
     - name: Invoke Terraform and deploy virtual router
       shell: |
-        terraform -chdir={{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }} apply --auto-approve  -var=config_file_path={{ terraform_path_to_config_file }}
+        terraform -chdir={{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }} apply --auto-approve -var=config_file_path={{ terraform_path_to_config_file }}
       when: action == "create"
 
     # Delete
