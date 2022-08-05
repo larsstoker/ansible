@@ -2,6 +2,9 @@
 - hosts: localhost
   connection: local
 
+  vars_files:
+    - ../vars/vault.yml
+
   tasks:
     # Create
     - name: Create Terraform project directory "{{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}"
@@ -12,6 +15,15 @@
     - name: Change source path
       shell: |
         sed -i "s#../modules/deploy_opnsense#../../modules/deploy_opnsense#" {{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}/main.tf
+      when: action == "create"
+
+    - name: Create terraform.tfvars
+      shell: |
+        cat <<EOF | sudo tee {{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}/terraform.tfvars
+        vsphere_host = "{{ vcenter_host }}"
+        vsphere_usr = "{{ terraform_vcenter_usr }}"
+        vsphere_pwd = "{{ terraform_vcenter_pwd }}"
+        EOF
       when: action == "create"
 
     - name: Invoke Terraform and initialize project directory
