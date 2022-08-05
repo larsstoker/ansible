@@ -19,7 +19,7 @@
 
     - name: Create terraform.tfvars
       shell: |
-        cat <<EOF | sudo tee {{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}/terraform.tfvars
+        cat <<EOF | tee {{ terraform_dir }}/{{ terraform_nested_dir_name }}/{{ terraform_project_name }}/terraform.tfvars
         vsphere_host = "{{ vcenter_host }}"
         vsphere_usr = "{{ terraform_vcenter_usr }}"
         vsphere_pwd = "{{ terraform_vcenter_pwd }}"
