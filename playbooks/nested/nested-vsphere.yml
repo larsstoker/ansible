@@ -28,7 +28,7 @@
         validate_certs: no
         object_name: "{{ vcenter_resource_pool_name }}"
         object_type: "ResourcePool"
-        group: "{{ ad_group_name }}"
+        group: "{{ ad_domain }}\{{ ad_group_name }}"
         role: "{{ vcenter_resource_pool_role }}"
         state: present
         recursive: "{{ vcenter_resource_pool_role_propagate }}"
@@ -55,7 +55,7 @@
         validate_certs: no
         object_name: "{{ vcenter_vm_folder_name }}"
         object_type: "Folder"
-        group: "{{ ad_group_name }}"
+        group: "{{ ad_domain }}\{{ ad_group_name }}"
         role: "{{ vcenter_vm_folder_role }}"
         state: present
         recursive: "{{ vcenter_vm_folder_role_propagate }}"
@@ -84,7 +84,7 @@
         validate_certs: no
         object_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
         object_type: "DistributedVirtualPortgroup"
-        group: "{{ ad_group_name }}"
+        group: "{{ ad_domain }}\{{ ad_group_name }}"
         role: "{{ vcenter_dvs_role }}"
         state: present
         recursive: "{{ vcenter_dvs_role_propagate }}"
@@ -114,7 +114,7 @@
         validate_certs: no
         object_name: "{{ item }}"
         object_type: "DistributedVirtualPortgroup"
-        group: "{{ ad_group_name }}"
+        group: "{{ ad_domain }}\{{ ad_group_name }}"
         role: "{{ vcenter_dvs_role }}"
         state: present
         recursive: "{{ vcenter_dvs_role_propagate }}"
