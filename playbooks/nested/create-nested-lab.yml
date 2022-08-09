@@ -1,0 +1,128 @@
+---
+- hosts: domain_controllers
+
+  vars_files:
+    - ../vars/vault.yml
+
+  tasks:
+    - name: Create AD group "{{ ad_group_name }}"
+      import_role:
+        name: active-directory
+      vars:
+        action: "create-group"
+        group_name: "{{ ad_group_name }}"
+        group_description: "{{ ad_group_description }}"
+        group_path: "{{ ad_group_path }}"
+      when: ad_group_create | default(false)
+
+    - name: Add "{{ ad_group_name }}" to "{{ ad_group_memberof }}"
+      import_role:
+        name: active-directory
+      vars:
+        action: "add-group-memberof"
+        group_memberof: "{{ ad_group_memberof }}"
+        group_name: "{{ ad_group_name }}"
+      when: ad_group_create | default(false)
+
+    - name: Add "{{ ad_group_members }}" to "{{ ad_group_name }}"
+      import_role:
+        name: active-directory
+      vars:
+        action: "add-members-to-group"
+        group_name: "{{ ad_group_name }}"
+        group_members: "{{ ad_group_members }}"
+      when: ad_group_create | default(false)
+
+- hosts: localhost
+
+  vars_files:
+    - ../vars/vault.yml
+
+  tasks:
+    - name: Create recourse pool "{{ vcenter_resource_pool_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "create-resource-pool"
+        resource_pool_name: "{{ vcenter_resource_pool_name }}"
+        resource_pool_cpu_limit: "{{ vcenter_resource_pool_cpu_limit }}"
+        resource_pool_mem_limit: "{{ vcenter_resource_pool_mem_limit }}"
+      when: vcenter_resource_pool_create | default(false)
+
+    - name: Assign group "{{ ad_group_name }}" to resource pool "{{ vcenter_resource_pool_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "assign-permissions"
+        object_name: "{{ vcenter_resource_pool_name }}"
+        object_type: "ResourcePool"
+        group: "{{ ad_domain }}\\{{ ad_group_name }}"
+        role: "{{ vcenter_resource_pool_role }}"
+        propagate: "{{ vcenter_resource_pool_role_propagate }}"
+      when: (vcenter_resource_pool_create | default(false)) and (ad_group_create | default(false))
+
+    - name: Create VM folder "{{ vcenter_vm_folder_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "create-vm-folder"
+        folder_name: "{{ vcenter_vm_folder_name }}"
+        folder_parent: "{{ vcenter_vm_folder_parent }}"
+      when: vcenter_vm_folder_create | default(false)
+
+    - name: Assign group "{{ ad_group_name }}" to folder "{{ vcenter_vm_folder_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "assign-permissions"
+        object_name: "{{ vcenter_vm_folder_name }}"
+        object_type: "Folder"
+        group: "{{ ad_domain }}\\{{ ad_group_name }}"
+        role: "{{ vcenter_vm_folder_role }}"
+        propagate: "{{ vcenter_vm_folder_role_propagate }}"
+      when: (vcenter_vm_folder_create | default(false)) and (ad_group_create | default(false))
+
+    - name: Create trunk vDPG "{{ vcenter_dvs_portgroup_trunk_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "create-trunk-portgroup"
+        switch_name: "{{ vcenter_dvs_name }}"
+        portgroup_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
+        vlan_id: "{{ vcenter_dvs_portgroup_trunk_range }}"
+        num_ports: "{{ vcenter_dvs_portgroup_trunk_ports }}"
+      when: vcenter_dvs_portgroup_trunk_create | default(false)
+
+    - name: Assign group "{{ ad_group_name }}" to folder "{{ vcenter_dvs_portgroup_trunk_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "assign-permissions"
+        object_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
+        object_type: "DistributedVirtualPortgroup"
+        group: "{{ ad_domain }}\\{{ ad_group_name }}"
+        role: "{{ vcenter_dvs_role }}"
+        propagate: "{{ vcenter_dvs_role_propagate }}"
+      when: (vcenter_dvs_portgroup_trunk_create | default(false)) and (ad_group_create | default(false))
+
+    - name: Create vDPG "{{ vcenter_dvs_portgroup_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "create-portgroup"
+        switch_name: "{{ vcenter_dvs_name }}"
+        portgroup_name: "{{ vcenter_dvs_portgroup_name }}"
+        num_ports: "{{ vcenter_dvs_portgroup_range }}"
+      when: vcenter_dvs_portgroup_create | default(false)
+
+    - name: Assign group "{{ ad_group_name }}" to folder "{{ vcenter_dvs_portgroup_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "assign-permissions"
+        object_name: "{{ vcenter_dvs_portgroup_name }}"
+        object_type: "DistributedVirtualPortgroup"
+        group: "{{ ad_domain }}\\{{ ad_group_name }}"
+        role: "{{ vcenter_dvs_role }}"
+        propagate: "{{ vcenter_dvs_role_propagate }}"
+      when: (vcenter_dvs_portgroup_create | default(false)) and (ad_group_create | default(false))

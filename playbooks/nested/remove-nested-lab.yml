@@ -1,0 +1,59 @@
+---
+- hosts: domain_controllers
+
+  vars_files:
+    - ../vars/vault.yml
+
+  tasks:
+    - name: Remove AD group "{{ ad_group_name }}"
+      import_role:
+        name: active-directory
+      vars:
+        action: "remove-group"
+        group_name: "{{ ad_group_name }}"
+      when: ad_group_create | default(false)
+
+- hosts: localhost
+
+  vars_files:
+    - ../vars/vault.yml
+
+  tasks:
+    - name: Remove resource pool "{{ vcenter_resource_pool_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "remove-resource-pool"
+        resource_pool_name: "{{ vcenter_resource_pool_name }}"
+        resource_pool_cpu_limit: "{{ vcenter_resource_pool_cpu_limit }}"
+        resource_pool_mem_limit: "{{ vcenter_resource_pool_mem_limit }}"
+      when: vcenter_resource_pool_create | default(false)
+
+    - name: Remove VM folder "{{ vcenter_vm_folder_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "remove-vm-folder"
+        folder_name: "{{ vcenter_vm_folder_name }}"
+      when: vcenter_vm_folder_create | default(false)
+
+    - name: Remove trunk vDPG "{{ vcenter_dvs_portgroup_trunk_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "remove-trunk-portgroup"
+        switch_name: "{{ vcenter_dvs_name }}"
+        portgroup_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
+        vlan_id: "{{ vcenter_dvs_portgroup_trunk_range }}"
+        num_ports: "{{ vcenter_dvs_portgroup_trunk_ports }}"
+      when: vcenter_dvs_portgroup_trunk_create | default(false)
+
+    - name: Remove vDPG "{{ vcenter_dvs_portgroup_name }}"
+      import_role:
+        name: vmware
+      vars:
+        action: "remove-portgroup"
+        switch_name: "{{ vcenter_dvs_name }}"
+        portgroup_name: "{{ vcenter_dvs_portgroup_name }}"
+        num_ports: "{{ vcenter_dvs_portgroup_range }}"
+      when: vcenter_dvs_portgroup_create | default(false)
