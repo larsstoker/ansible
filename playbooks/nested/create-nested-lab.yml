@@ -1,5 +1,6 @@
 ---
 - hosts: domain_controllers
+  gather_facts: true
 
   vars_files:
     - ../vars/vault.yml
@@ -9,7 +10,7 @@
       import_role:
         name: active-directory
       vars:
-        action: "create-group"
+        task: "create-group"
         group_name: "{{ ad_group_name }}"
         group_description: "{{ ad_group_description }}"
         group_path: "{{ ad_group_path }}"
@@ -19,7 +20,7 @@
       import_role:
         name: active-directory
       vars:
-        action: "add-group-memberof"
+        task: "add-group-memberof"
         group_memberof: "{{ ad_group_memberof }}"
         group_name: "{{ ad_group_name }}"
       when: ad_group_create | default(false)
@@ -28,7 +29,7 @@
       import_role:
         name: active-directory
       vars:
-        action: "add-members-to-group"
+        task: "add-members-to-group"
         group_name: "{{ ad_group_name }}"
         group_members: "{{ ad_group_members }}"
       when: ad_group_create | default(false)
@@ -43,7 +44,7 @@
       import_role:
         name: vmware
       vars:
-        action: "create-resource-pool"
+        task: "create-resource-pool"
         resource_pool_name: "{{ vcenter_resource_pool_name }}"
         resource_pool_cpu_limit: "{{ vcenter_resource_pool_cpu_limit }}"
         resource_pool_mem_limit: "{{ vcenter_resource_pool_mem_limit }}"
@@ -53,7 +54,7 @@
       import_role:
         name: vmware
       vars:
-        action: "assign-permissions"
+        task: "assign-permissions"
         object_name: "{{ vcenter_resource_pool_name }}"
         object_type: "ResourcePool"
         group: "{{ ad_domain }}\\{{ ad_group_name }}"
@@ -65,7 +66,7 @@
       import_role:
         name: vmware
       vars:
-        action: "create-vm-folder"
+        task: "create-vm-folder"
         folder_name: "{{ vcenter_vm_folder_name }}"
         folder_parent: "{{ vcenter_vm_folder_parent }}"
       when: vcenter_vm_folder_create | default(false)
@@ -74,7 +75,7 @@
       import_role:
         name: vmware
       vars:
-        action: "assign-permissions"
+        task: "assign-permissions"
         object_name: "{{ vcenter_vm_folder_name }}"
         object_type: "Folder"
         group: "{{ ad_domain }}\\{{ ad_group_name }}"
@@ -86,7 +87,7 @@
       import_role:
         name: vmware
       vars:
-        action: "create-trunk-portgroup"
+        task: "create-trunk-portgroup"
         switch_name: "{{ vcenter_dvs_name }}"
         portgroup_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
         vlan_id: "{{ vcenter_dvs_portgroup_trunk_range }}"
@@ -97,7 +98,7 @@
       import_role:
         name: vmware
       vars:
-        action: "assign-permissions"
+        task: "assign-permissions"
         object_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
         object_type: "DistributedVirtualPortgroup"
         group: "{{ ad_domain }}\\{{ ad_group_name }}"
@@ -109,7 +110,7 @@
       import_role:
         name: vmware
       vars:
-        action: "create-portgroup"
+        task: "create-portgroup"
         switch_name: "{{ vcenter_dvs_name }}"
         portgroup_name: "{{ vcenter_dvs_portgroup_name }}"
         num_ports: "{{ vcenter_dvs_portgroup_range }}"
@@ -119,7 +120,7 @@
       import_role:
         name: vmware
       vars:
-        action: "assign-permissions"
+        task: "assign-permissions"
         object_name: "{{ vcenter_dvs_portgroup_name }}"
         object_type: "DistributedVirtualPortgroup"
         group: "{{ ad_domain }}\\{{ ad_group_name }}"
