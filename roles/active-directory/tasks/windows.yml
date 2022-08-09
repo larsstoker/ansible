@@ -1,0 +1,46 @@
+---
+- name: Join domain
+  win_domain_group:
+    dns_domain_name: "{{ ad_domain }}"
+    domain_admin_user: "{{ ad_usr }}"
+    domain_admin_password: "{{ ad_pwd }}"
+    domain_ou_path: "{{ domain_ou }}"
+    state: domain
+  when: join | default(false)
+
+# - notify: restart windows
+#   when: allow_restart | default(false)
+
+- name: Create group "{{ group_name }}"
+  win_domain_group:
+    domain_username: "{{ ansible_user }}"
+    domain_password: "{{ ansible_password }}"
+    name: "{{ group_name }}"
+    description: "{{ group_description }}"
+    scope: global
+    path: "{{ group_path }}"
+  when: (task == "create-group") and (ansible_facts.windows_domain_role == "Primary domain controller")
+
+- name: Add "{{ group_name }}" to "{{ group_memberof }}"
+  win_domain_group_membership:
+    domain_username: "{{ ansible_user }}"
+    domain_password: "{{ ansible_password }}"
+    name: "{{ group_memberof }}"
+    members: "{{ group_name }}"
+  when: (task == "add-group-memberof") and (ansible_facts.windows_domain_role == "Primary domain controller")
+
+- name: Add "{{ group_members }}" to "{{ group_name }}"
+  win_domain_group_membership:
+    domain_username: "{{ ansible_user }}"
+    domain_password: "{{ ansible_password }}"
+    name: "{{ group_name }}"
+    members: "{{ group_members }}"
+  when: (task == "add-members-to-group") and (ansible_facts.windows_domain_role == "Primary domain controller")
+
+- name: Remove group "{{ group_name }}"
+  win_domain_group:
+    domain_username: "{{ ansible_user }}"
+    domain_password: "{{ ansible_password }}"
+    name: "{{ group_name }}"
+    state: absent
+  when: (task == "remove-group") and (ansible_facts.windows_domain_role == "Primary domain controller")
