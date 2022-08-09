@@ -9,7 +9,7 @@
       import_role:
         name: active-directory
       vars:
-        action: "remove-group"
+        task: "remove-group"
         group_name: "{{ ad_group_name }}"
       when: ad_group_create | default(false)
 
@@ -23,7 +23,7 @@
       import_role:
         name: vmware
       vars:
-        action: "remove-resource-pool"
+        task: "remove-resource-pool"
         resource_pool_name: "{{ vcenter_resource_pool_name }}"
         resource_pool_cpu_limit: "{{ vcenter_resource_pool_cpu_limit }}"
         resource_pool_mem_limit: "{{ vcenter_resource_pool_mem_limit }}"
@@ -33,7 +33,7 @@
       import_role:
         name: vmware
       vars:
-        action: "remove-vm-folder"
+        task: "remove-vm-folder"
         folder_name: "{{ vcenter_vm_folder_name }}"
       when: vcenter_vm_folder_create | default(false)
 
@@ -41,7 +41,7 @@
       import_role:
         name: vmware
       vars:
-        action: "remove-trunk-portgroup"
+        task: "remove-trunk-portgroup"
         switch_name: "{{ vcenter_dvs_name }}"
         portgroup_name: "{{ vcenter_dvs_portgroup_trunk_name }}"
         vlan_id: "{{ vcenter_dvs_portgroup_trunk_range }}"
@@ -52,7 +52,7 @@
       import_role:
         name: vmware
       vars:
-        action: "remove-portgroup"
+        task: "remove-portgroup"
         switch_name: "{{ vcenter_dvs_name }}"
         portgroup_name: "{{ vcenter_dvs_portgroup_name }}"
         num_ports: "{{ vcenter_dvs_portgroup_range }}"
