@@ -1,44 +1,128 @@
 ---
-- name: Include clone vm from template task
-  include_tasks: "clone-vm-from-template.yml"
-  when: task == "clone-vm-from-template"
-
-- name: Add group to object
+- name: Assign group "{{ group }}" to "{{ object_name }}"
   vmware_object_role_permission:
     hostname: "{{ vcenter_host }}"
     username: "{{ vcenter_usr }}"
     password: "{{ vcenter_pwd }}"
-    validate_certs: no
-    role: "{{ vcenter_role }}"
-    group: "{{ vcenter_group }}"
-    object_name: "{{ vcenter_object_name }}"
-    object_type: "{{ vcenter_object_type }}"
+    validate_certs: false
+    object_name: "{{ item }}"
+    object_type: "{{ object_type }}"
+    group: "{{ group }}"
+    role: "{{ role }}"
     state: present
-    recursive: "{{ vcenter_propagate }}"
-  when: task == "add-group-permission"
+    recursive: "{{ propagate }}"
+  with_items: "{{ object_name }}"
+  when: task == "assign-permissions"
 
-- name: Create VM folder
-  vcenter_folder:
-    hostname: "{{ vcenter_host }}"
-    username: "{{ vcenter_usr }}"
-    password: "{{ vcenter_pwd }}"
-    validate_certs: no
-    datacenter: "{{ vcenter_datacenter }}"
-    folder_name: "{{ vcenter_folder_name }}"
-    folder_type: vm
-    state: present
-  when: task == "create-vm-folder"
-
-- name: Create recourse pool
+- name: Create resource pool "{{ resource_pool_name }}"
   vmware_resource_pool:
     hostname: "{{ vcenter_host }}"
     username: "{{ vcenter_usr }}"
     password: "{{ vcenter_pwd }}"
-    validate_certs: no
+    validate_certs: false
     datacenter: "{{ vcenter_datacenter }}"
     cluster: "{{ vcenter_cluster }}"
-    resource_pool: "{{ vcenter_resource_pool_name }}"
-    cpu_limit: "{{ vcenter_cpu_limit }}"
-    mem_limit: "{{ vcenter_mem_limit }}"
+    resource_pool: "{{ resource_pool_name }}"
+    cpu_limit: "{{ resource_pool_cpu_limit }}"
+    mem_limit: "{{ resource_pool_mem_limit }}"
     state: present
   when: task == "create-resource-pool"
+
+- name: Create VM folder "{{ folder_name }}"
+  vcenter_folder:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: false
+    datacenter: "{{ vcenter_datacenter }}"
+    folder_name: "{{ folder_name }}"
+    parent_folder: "{{ folder_parent }}"
+    folder_type: vm
+    state: present
+  when: task == "create-vm-folder"
+
+- name: Create trunk portgroup "{{ portgroup_name }}"
+  vmware_dvs_portgroup:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: false
+    switch_name: "{{ switch_name }}"
+    portgroup_name: "{{ portgroup_name }}"
+    vlan_trunk: true
+    vlan_id: "{{ vlan_id }}"
+    num_ports: "{{ num_ports }}"
+    port_binding: static
+    state: present
+  when: task == "create-trunk-portgroup"
+
+- name: Create portgroup "{{ portgroup_name }}"
+  vmware_dvs_portgroup:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: false
+    switch_name: "{{ switch_name }}"
+    portgroup_name: "{{ item }}"
+    vlan_trunk: false
+    vlan_id: "{{ item | regex_search('[0-9]*$') }}"
+    num_ports: "{{ num_ports }}"
+    port_binding: static
+    state: present
+  with_items: "{{ portgroup_name }}"
+  when: task == "create-portgroup"
+
+- name: Remove resource pool "{{ resource_pool_name }}"
+  vmware_resource_pool:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: false
+    datacenter: "{{ vcenter_datacenter }}"
+    cluster: "{{ vcenter_cluster }}"
+    resource_pool: "{{ resource_pool_name }}"
+    state: absent
+  when: task == "remove-resource-pool"
+
+- name: Remove VM folder "{{ folder_name }}"
+  vcenter_folder:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: false
+    datacenter: "{{ vcenter_datacenter }}"
+    folder_name: "{{ folder_name }}"
+    folder_type: vm
+    state: absent
+  when: task == "remove-vm-folder"
+
+- name: Remove trunk portgroup "{{ portgroup_name }}"
+  vmware_dvs_portgroup:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: false
+    switch_name: "{{ switch_name }}"
+    portgroup_name: "{{ portgroup_name }}"
+    vlan_trunk: true
+    vlan_id: "{{ vlan_id }}"
+    num_ports: "{{ num_ports }}"
+    port_binding: static
+    state: absent
+  when: task == "remove-trunk-portgroup"
+
+- name: Delete vDPG "{{ portgroup_name }}"
+  vmware_dvs_portgroup:
+    hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_usr }}"
+    password: "{{ vcenter_pwd }}"
+    validate_certs: false
+    switch_name: "{{ switch_name }}"
+    portgroup_name: "{{ item }}"
+    vlan_trunk: false
+    vlan_id: "{{ item | regex_search('[0-9]*$') }}"
+    num_ports: "{{ num_ports }}"
+    port_binding: static
+    state: absent
+  with_items: "{{ portgroup_name }}"
+  when: task == "remove-portgroup"
