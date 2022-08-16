@@ -127,3 +127,25 @@
         role: "{{ vcenter_dvs_role }}"
         propagate: "{{ vcenter_dvs_role_propagate }}"
       when: (vcenter_dvs_portgroup_create | default(false)) and (ad_group_create | default(false))
+
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ../vars/vault.yml
+
+  tasks:
+    - name: Invoke Terraform and initialize
+      import_role:
+        name: terraform
+      vars:
+        task: "terraform-init"
+        terraform_dir: "{{ terraform_dir }}"
+
+    - name: Invoke Terraform and apply
+      import_role:
+        name: terraform
+      vars:
+        task: "terraform-apply"
+        terraform_dir: "{{ terraform_dir }}"
+        terraform_hosts_config_path: "{{ terraform_hosts_config_path }}"

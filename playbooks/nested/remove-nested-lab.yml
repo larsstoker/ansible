@@ -57,3 +57,18 @@
         portgroup_name: "{{ vcenter_dvs_portgroup_name }}"
         num_ports: "{{ vcenter_dvs_portgroup_range }}"
       when: vcenter_dvs_portgroup_create | default(false)
+
+- hosts: localhost
+  connection: local
+
+  vars_files:
+    - ../vars/vault.yml
+
+  tasks:
+    - name: Invoke Terraform and destroy
+      import_role:
+        name: terraform
+      vars:
+        task: "terraform-destroy"
+        terraform_dir: "{{ terraform_dir }}"
+        terraform_hosts_config_path: "{{ terraform_hosts_config_path }}"

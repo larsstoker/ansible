@@ -1,0 +1,15 @@
+---
+- name: Invoke Terraform and initialize
+  shell: |
+    terraform  -chdir={{ terraform_dir }} init
+  when: task == "terraform-init"
+
+- name: Invoke Terraform and deploy
+  shell: |
+    terraform -chdir={{ terraform_dir }} apply --auto-approve -var=config_file_path={{ terraform_hosts_config_path }}
+  when: task == "terraform-apply"
+
+- name: Invoke Terraform and destroy virtual router
+  shell: |
+    terraform -chdir={{ terraform_dir }} destroy --auto-approve -var=config_file_path={{ terraform_hosts_config_path }}
+  when: task == "terraform-destroy"
